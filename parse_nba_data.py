@@ -7,21 +7,28 @@ STANDINGS = os.path.join(NBA_DATA, 'standings')
 SCORES = os.path.join(NBA_DATA, 'scores')
 RESULTS = os.path.join(NBA_DATA, 'results')
 
-box_scores = os.listdir(SCORES)
-box_scores = [os.path.join(SCORES, f) for f in box_scores if f.endswith(".html")]
-
 
 def parse_html(box_score):
+    """
+    Parse the box score html file
+    :param box_score:
+    :return: BeautifulSoup object for the html
+    """
     with open(box_score) as f:
         html = f.read()
 
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, features="html.parser")
     [s.decompose() for s in soup.select("tr.over_header")]
     [s.decompose() for s in soup.select("tr.thead")]
     return soup
 
 
 def read_season_info(soup):
+    """
+    Read the season from the html
+    :param soup:
+    :return: NBA season from the html
+    """
     nav = soup.select("#bottom_nav_container")[0]
     hrefs = [a["href"] for a in nav.find_all('a')]
     season = os.path.basename(hrefs[1]).split("_")[0]
@@ -29,6 +36,11 @@ def read_season_info(soup):
 
 
 def read_line_score(soup):
+    """
+    Read the line score from the box score
+    :param soup:
+    :return:
+    """
     line_score = pd.read_html(str(soup), attrs={'id': 'line_score'})[0]
     cols = list(line_score.columns)
     cols[0] = "team"
@@ -41,6 +53,13 @@ def read_line_score(soup):
 
 
 def read_stats(soup, team, stat):
+    """
+    Read the html into a dataframe
+    :param soup:
+    :param team:
+    :param stat:
+    :return: dataframe
+    """
     df = pd.read_html(str(soup), attrs={'id': f'box-{team}-game-{stat}'}, index_col=0)[0]
     df = df.apply(pd.to_numeric, errors="coerce")
     return df
@@ -49,9 +68,16 @@ def read_stats(soup, team, stat):
 if __name__ == '__main__':
     games = []
     base_cols = None
+
+    box_scores = os.listdir(SCORES)
+    box_scores = [os.path.join(SCORES, f) for f in box_scores if f.endswith(".html")]
+    print(f'BOX_SCORES are: {box_scores}')
+
     for box_score in box_scores:
+        print(f'Parsing {box_score}')
         soup = parse_html(box_score)
 
+        print(f'Reading line_score')
         line_score = read_line_score(soup)
         teams = list(line_score["team"])
 
@@ -97,4 +123,4 @@ if __name__ == '__main__':
             print(f"{len(games)} / {len(box_scores)}")
 
         games_df = pd.concat(games, ignore_index=True)
-        games_df.to_csv(os.path.join(RESULTS, "games.csv"), index=False)
+        games_df.to_csv(os.path.join(RESULTS, "nba_games.csv"), index=False)

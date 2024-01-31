@@ -3,7 +3,7 @@ import time
 from bs4 import BeautifulSoup
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
 
-SEASONS = list(range(2020, 2023))
+SEASONS = list(range(2022, 2023))
 NBA_DATA = 'nba_data'
 STANDINGS = os.path.join(NBA_DATA, 'standings')
 SCORES = os.path.join(NBA_DATA, 'scores')
@@ -33,7 +33,7 @@ async def scrape_season(season):
     url = f"https://www.basketball-reference.com/leagues/NBA_{season}_games.html"
     html = await get_nba_data_html(url, "#content .filter")
 
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, features="html.parser")
     links = soup.find_all("a")
     standings_pages = [f"https://www.basketball-reference.com{l['href']}" for l in links]
 
@@ -43,7 +43,7 @@ async def scrape_season(season):
             continue
 
         html = await get_nba_data_html(url, "#all_schedule")
-        with open(save_path, "w+") as f:
+        with open(save_path, "w+", encoding="utf-8") as f:
             f.write(html)
 
 
@@ -51,7 +51,7 @@ async def scrape_game(standings_file):
     with open(standings_file, 'r') as f:
         html = f.read()
 
-    soup = BeautifulSoup(html)
+    soup = BeautifulSoup(html, features="html.parser")
     links = soup.find_all("a")
     hrefs = [l.get('href') for l in links]
     box_scores = [f"https://www.basketball-reference.com{l}" for l in hrefs if l and "boxscore" in l and '.html' in l]
@@ -64,7 +64,7 @@ async def scrape_game(standings_file):
         html = await get_nba_data_html(url, "#content")
         if not html:
             continue
-        with open(save_path, "w+") as f:
+        with open(save_path, "w+", encoding="utf-8") as f:
             f.write(html)
 
 

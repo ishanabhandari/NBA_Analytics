@@ -15,9 +15,9 @@ This is a data science and machine learning project that predicts the winners of
 3. Source the virtual environment
 4. Install the required libraries using the following command
 ```pip install -r requirements.txt```
-5. Run ```get_nba_data.py``` to get the data
-6. Run ```parse_nba_data.py``` to parse the data
-7. Run ```model_nba_games.py``` to predict the games
+5. Run ```python get_nba_data.py``` to get the data. This can take several hours to complete.
+6. Run ```python parse_nba_data.py``` to parse the data. This can take several hours to complete.
+7. Run ```python model_nba_games.py``` to predict the games.
 
 
 
