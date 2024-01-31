@@ -17,7 +17,7 @@ This is a data science and machine learning project that predicts the winners of
 ```pip install -r requirements.txt```
 5. Run ```get_nba_data.py``` to get the data
 6. Run ```parse_nba_data.py``` to parse the data
-7. Run ```predict_nba_games.py``` to predict the games
+7. Run ```model_nba_games.py``` to predict the games
 
 
 
