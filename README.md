@@ -1,4 +1,4 @@
-# tsa_project
+# Sports Analytics Project
 
 ## Project Description
 This is a data science and machine learning project that predicts the winners of NBA basketball games
